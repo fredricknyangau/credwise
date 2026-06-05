@@ -67,6 +67,8 @@ class Settings(BaseSettings):
         # Normalise to asyncpg driver scheme
         v = v.replace("postgresql://", "postgresql+asyncpg://", 1)
         v = v.replace("postgres://", "postgresql+asyncpg://", 1)
+        # asyncpg accepts ssl=require instead of sslmode=require
+        v = v.replace("sslmode=", "ssl=")
         return v
 
     @property

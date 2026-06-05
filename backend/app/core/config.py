@@ -64,11 +64,14 @@ class Settings(BaseSettings):
     def database_url_must_be_asyncpg(cls, v: str) -> str:
         if "postgresql" not in v and "postgres" not in v:
             raise ValueError("DATABASE_URL must be a PostgreSQL connection string")
+        import re
         # Normalise to asyncpg driver scheme
         v = v.replace("postgresql://", "postgresql+asyncpg://", 1)
         v = v.replace("postgres://", "postgresql+asyncpg://", 1)
         # asyncpg accepts ssl=require instead of sslmode=require
         v = v.replace("sslmode=", "ssl=")
+        v = re.sub(r'([?&])channel_binding=[^&]*(&?)', r'\1', v)
+        v = v.replace("?&", "?").rstrip("?&")
         return v
 
     @property

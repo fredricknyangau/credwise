@@ -16,10 +16,13 @@ config = context.config
 # Override sqlalchemy.url from environment if present
 db_url = os.getenv("DATABASE_URL", "")
 if db_url:
+    import re
     # Ensure asyncpg driver
     db_url = db_url.replace("postgresql://", "postgresql+asyncpg://", 1)
     db_url = db_url.replace("postgres://", "postgresql+asyncpg://", 1)
     db_url = db_url.replace("sslmode=", "ssl=")
+    db_url = re.sub(r'([?&])channel_binding=[^&]*(&?)', r'\1', db_url)
+    db_url = db_url.replace("?&", "?").rstrip("?&")
     config.set_main_option("sqlalchemy.url", db_url)
 
 if config.config_file_name is not None:

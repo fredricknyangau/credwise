@@ -2,6 +2,7 @@ import { useModule, useQuizByModule } from "@/lib/api/hooks";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, CheckCircle2, ChevronRight, Circle } from "lucide-react";
 import { useState } from "react";
+import { api, USE_MOCKS } from "@/lib/api/client";
 
 export const Route = createFileRoute("/portal/modules/$moduleId")({
   head: () => ({ meta: [{ title: "Lesson - CredWise" }] }),
@@ -10,7 +11,7 @@ export const Route = createFileRoute("/portal/modules/$moduleId")({
 
 function ModuleView() {
   const { moduleId } = Route.useParams();
-  const { data: module, isLoading } = useModule(moduleId);
+  const { data: module, isLoading, refetch } = useModule(moduleId);
   const { data: quiz } = useQuizByModule(moduleId);
   const navigate = useNavigate();
   const [selected, setSelected] = useState(0);
@@ -19,6 +20,22 @@ function ModuleView() {
   if (!module) return <NotFound />;
 
   const lesson = module.lessons[selected];
+
+  const markCurrentComplete = async () => {
+    if (!module) return;
+    const currentLesson = module.lessons[selected];
+    if (!USE_MOCKS && !currentLesson.completed) {
+      try {
+        await api.post("/literacy/lessons/complete", {
+          lesson_id: currentLesson.id,
+        });
+        await api.post("/credit-scores/generate");
+        refetch();
+      } catch (err) {
+        console.error("Failed to mark lesson complete", err);
+      }
+    }
+  };
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-6">
@@ -46,7 +63,7 @@ function ModuleView() {
       <div className="grid gap-6 md:grid-cols-[200px_1fr]">
         {/* Lesson list */}
         <aside className="space-y-1.5">
-          {module.lessons.map((l, i) => (
+          {module.lessons.map((l: any, i: number) => (
             <button
               key={l.id}
               onClick={() => setSelected(i)}
@@ -84,16 +101,20 @@ function ModuleView() {
             </button>
             {selected < module.lessons.length - 1 ? (
               <button
-                onClick={() => setSelected((s) => s + 1)}
+                onClick={async () => {
+                  await markCurrentComplete();
+                  setSelected((s) => s + 1);
+                }}
                 className="inline-flex items-center gap-2 rounded-xl bg-brand-primary px-5 py-2.5 text-sm font-bold text-primary-foreground hover:bg-brand-secondary"
               >
                 Next lesson <ChevronRight className="size-4" />
               </button>
             ) : quiz ? (
               <button
-                onClick={() =>
-                  navigate({ to: "/portal/quiz/$quizId", params: { quizId: quiz.id } })
-                }
+                onClick={async () => {
+                  await markCurrentComplete();
+                  navigate({ to: "/portal/quiz/$quizId", params: { quizId: quiz.id } });
+                }}
                 className="inline-flex items-center gap-2 rounded-xl bg-brand-accent px-5 py-2.5 text-sm font-bold text-white hover:opacity-90"
               >
                 Take the quiz <ChevronRight className="size-4" />

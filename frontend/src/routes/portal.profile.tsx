@@ -39,21 +39,79 @@ const steps = [
   },
 ];
 
+import { api, USE_MOCKS } from "@/lib/api/client";
+
 function ProfileForm() {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [profile, setProfile] = useState<Partial<FinancialProfile>>({});
 
   const current = steps[step];
-  const pick = (val: string) => {
-    setProfile((p) => ({ ...p, [current.key]: val }));
+  const pick = async (val: string) => {
+    const nextProfile = { ...profile, [current.key]: val };
+    setProfile(nextProfile);
+
     if (step + 1 < steps.length) {
       setTimeout(() => setStep((s) => s + 1), 200);
     } else {
-      setTimeout(() => {
-        toast.success("Profile saved - +6 to your readiness score");
+      if (USE_MOCKS) {
+        toast.success("Profile saved - +6 to your readiness score (Mock Mode)");
         navigate({ to: "/portal/readiness" });
-      }, 250);
+      } else {
+        try {
+          // Map to backend schema
+          const incomeMap: Record<string, number> = {
+            "Under $20": 5000,
+            "$20 – $50": 15000,
+            "$50 – $150": 45000,
+            "$150 – $400": 120000,
+            "Over $400": 250000,
+          };
+          const savingsMap: Record<string, string> = {
+            "Daily": "daily",
+            "Weekly": "weekly",
+            "Monthly": "monthly",
+            "Rarely": "irregular",
+            "Not yet": "irregular",
+          };
+          const businessMap: Record<string, string> = {
+            "Market trader": "trading",
+            "Tailoring / textiles": "trading",
+            "Farming": "farming",
+            "Food vendor": "trading",
+            "Services": "services",
+            "Other": "other",
+          };
+          const coopMap: Record<string, boolean> = {
+            "Yes, very active": true,
+            "Yes, occasionally": true,
+            "Yes, but inactive": false,
+            "No, not yet": false,
+          };
+
+          const payload = {
+            monthly_income: incomeMap[nextProfile.incomeRange || ""] || 10000,
+            savings_frequency: savingsMap[nextProfile.savingsHabit || ""] || "irregular",
+            business_type: businessMap[nextProfile.businessType || ""] || "other",
+            years_in_business: 2.0, // default placeholder
+            cooperative_member: coopMap[nextProfile.cooperative || ""] || false,
+            existing_loans: 0,
+          };
+
+          // Save profile
+          await api.put("/profiles/me", payload);
+          
+          // Generate new score instantly based on new factors
+          await api.post("/credit-scores/generate");
+
+          toast.success("Profile saved & credit readiness updated!");
+          navigate({ to: "/portal/readiness" });
+        } catch (err: any) {
+          toast.error(
+            err.response?.data?.message || "Failed to save profile. Please try again."
+          );
+        }
+      }
     }
   };
 

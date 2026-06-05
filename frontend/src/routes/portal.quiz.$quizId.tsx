@@ -2,6 +2,8 @@ import { useQuiz } from "@/lib/api/hooks";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Check, X } from "lucide-react";
 import { useState } from "react";
+import { api, USE_MOCKS } from "@/lib/api/client";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/portal/quiz/$quizId")({
   head: () => ({ meta: [{ title: "Quiz - CredWise" }] }),
@@ -16,19 +18,59 @@ function QuizView() {
   const [answers, setAnswers] = useState<number[]>([]);
   const [done, setDone] = useState(false);
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [finalPct, setFinalPct] = useState<number | null>(null);
+  const [correctCount, setCorrectCount] = useState(0);
+
   if (isLoading)
     return <div className="grid place-items-center py-20 text-muted-foreground">Loading quiz…</div>;
   if (!quiz) return null;
 
   const q = quiz.questions[step];
   const correct = picked !== null && picked === q.correctIndex;
-  const score = answers.reduce(
-    (acc, a, i) => acc + (a === quiz.questions[i].correctIndex ? 1 : 0),
-    0,
-  );
+
+  const handleFinish = async (nextAnswers: number[]) => {
+    setIsSubmitting(true);
+    if (USE_MOCKS) {
+      const calculatedScore = nextAnswers.reduce(
+        (acc, a, i) => acc + (a === quiz.questions[i].correctIndex ? 1 : 0),
+        0,
+      );
+      setCorrectCount(calculatedScore);
+      setFinalPct(Math.round((calculatedScore / quiz.questions.length) * 100));
+      setDone(true);
+      setIsSubmitting(false);
+    } else {
+      try {
+        const answersDict: Record<string, string> = {};
+        quiz.questions.forEach((qn: any, i: number) => {
+          const pickedIndex = nextAnswers[i];
+          answersDict[qn.id] = qn.options[pickedIndex];
+        });
+
+        const res = await api.post(`/quizzes/${quiz.id}/submit`, {
+          answers: answersDict,
+        });
+        const attempt = res.data.data;
+
+        // Instantly generate new credit readiness score based on new quiz score!
+        await api.post("/credit-scores/generate");
+
+        setCorrectCount(attempt.correct);
+        setFinalPct(Math.round((attempt.correct / attempt.total_questions) * 100));
+        setDone(true);
+      } catch (err: any) {
+        toast.error(
+          err.response?.data?.message || "Failed to submit quiz results. Please try again."
+        );
+      } finally {
+        setIsSubmitting(false);
+      }
+    }
+  };
 
   if (done) {
-    const pct = Math.round((score / quiz.questions.length) * 100);
+    const pct = finalPct ?? 0;
     return (
       <main className="mx-auto max-w-md px-4 py-12 text-center">
         <div className="rounded-3xl border border-border bg-card p-8 shadow-soft">
@@ -37,7 +79,7 @@ function QuizView() {
           </p>
           <h1 className="mt-2 font-display text-5xl font-black">{pct}%</h1>
           <p className="mt-2 text-muted-foreground">
-            {score} of {quiz.questions.length} correct
+            {correctCount} of {quiz.questions.length} correct
           </p>
           <p className="mt-6 text-sm">
             {pct >= 80
@@ -84,7 +126,7 @@ function QuizView() {
         </span>
         <h2 className="mt-4 font-display text-2xl font-bold leading-tight">{q.prompt}</h2>
         <div className="mt-6 space-y-3">
-          {q.options.map((opt, i) => {
+          {q.options.map((opt: string, i: number) => {
             const isPicked = picked === i;
             const showFeedback = picked !== null;
             const isCorrect = i === q.correctIndex;
@@ -123,17 +165,24 @@ function QuizView() {
         )}
 
         <button
-          disabled={picked === null}
+          disabled={picked === null || isSubmitting}
           onClick={() => {
             const next = [...answers, picked!];
             setAnswers(next);
             setPicked(null);
-            if (step + 1 >= quiz.questions.length) setDone(true);
-            else setStep((s) => s + 1);
+            if (step + 1 >= quiz.questions.length) {
+              handleFinish(next);
+            } else {
+              setStep((s) => s + 1);
+            }
           }}
           className="mt-6 w-full rounded-xl bg-brand-primary py-3 font-bold text-primary-foreground transition-colors hover:bg-brand-secondary disabled:opacity-40"
         >
-          {step + 1 >= quiz.questions.length ? "Finish quiz" : "Next question"}
+          {isSubmitting
+            ? "Submitting..."
+            : step + 1 >= quiz.questions.length
+              ? "Finish quiz"
+              : "Next question"}
         </button>
       </div>
     </main>

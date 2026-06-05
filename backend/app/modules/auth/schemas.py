@@ -44,6 +44,24 @@ class MFIRegistrationResponse(BaseModel):
     role: str
 
 
+# ─── Learner Registration ──────────────────────────────────────────────────────
+
+class LearnerRegistrationRequest(BaseModel):
+    full_name: str = Field(..., min_length=2, max_length=200)
+    phone_number: str
+    password: str
+
+    @field_validator("phone_number")
+    @classmethod
+    def phone_format(cls, v: str) -> str:
+        return validate_phone(v)
+
+    @field_validator("password")
+    @classmethod
+    def password_strength(cls, v: str) -> str:
+        return validate_password_strength(v)
+
+
 # ─── Login ────────────────────────────────────────────────────────────────────
 
 class LoginRequest(BaseModel):

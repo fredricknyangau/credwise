@@ -18,6 +18,7 @@ import { Route as PortalReadinessRouteImport } from './routes/portal.readiness'
 import { Route as PortalProfileRouteImport } from './routes/portal.profile'
 import { Route as MfiClientsRouteImport } from './routes/mfi.clients'
 import { Route as MfiAnalyticsRouteImport } from './routes/mfi.analytics'
+import { Route as AuthRegisterLearnerRouteImport } from './routes/auth.register-learner'
 import { Route as AuthRegisterRouteImport } from './routes/auth.register'
 import { Route as AuthLoginRouteImport } from './routes/auth.login'
 import { Route as PortalQuizQuizIdRouteImport } from './routes/portal.quiz.$quizId'
@@ -68,6 +69,11 @@ const MfiAnalyticsRoute = MfiAnalyticsRouteImport.update({
   path: '/analytics',
   getParentRoute: () => MfiRoute,
 } as any)
+const AuthRegisterLearnerRoute = AuthRegisterLearnerRouteImport.update({
+  id: '/auth/register-learner',
+  path: '/auth/register-learner',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRegisterRoute = AuthRegisterRouteImport.update({
   id: '/auth/register',
   path: '/auth/register',
@@ -95,6 +101,7 @@ export interface FileRoutesByFullPath {
   '/portal': typeof PortalRouteWithChildren
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/auth/register-learner': typeof AuthRegisterLearnerRoute
   '/mfi/analytics': typeof MfiAnalyticsRoute
   '/mfi/clients': typeof MfiClientsRoute
   '/portal/profile': typeof PortalProfileRoute
@@ -108,6 +115,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/auth/register-learner': typeof AuthRegisterLearnerRoute
   '/mfi/analytics': typeof MfiAnalyticsRoute
   '/mfi/clients': typeof MfiClientsRoute
   '/portal/profile': typeof PortalProfileRoute
@@ -124,6 +132,7 @@ export interface FileRoutesById {
   '/portal': typeof PortalRouteWithChildren
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/auth/register-learner': typeof AuthRegisterLearnerRoute
   '/mfi/analytics': typeof MfiAnalyticsRoute
   '/mfi/clients': typeof MfiClientsRoute
   '/portal/profile': typeof PortalProfileRoute
@@ -141,6 +150,7 @@ export interface FileRouteTypes {
     | '/portal'
     | '/auth/login'
     | '/auth/register'
+    | '/auth/register-learner'
     | '/mfi/analytics'
     | '/mfi/clients'
     | '/portal/profile'
@@ -154,6 +164,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth/login'
     | '/auth/register'
+    | '/auth/register-learner'
     | '/mfi/analytics'
     | '/mfi/clients'
     | '/portal/profile'
@@ -169,6 +180,7 @@ export interface FileRouteTypes {
     | '/portal'
     | '/auth/login'
     | '/auth/register'
+    | '/auth/register-learner'
     | '/mfi/analytics'
     | '/mfi/clients'
     | '/portal/profile'
@@ -185,6 +197,7 @@ export interface RootRouteChildren {
   PortalRoute: typeof PortalRouteWithChildren
   AuthLoginRoute: typeof AuthLoginRoute
   AuthRegisterRoute: typeof AuthRegisterRoute
+  AuthRegisterLearnerRoute: typeof AuthRegisterLearnerRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -251,6 +264,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/mfi/analytics'
       preLoaderRoute: typeof MfiAnalyticsRouteImport
       parentRoute: typeof MfiRoute
+    }
+    '/auth/register-learner': {
+      id: '/auth/register-learner'
+      path: '/auth/register-learner'
+      fullPath: '/auth/register-learner'
+      preLoaderRoute: typeof AuthRegisterLearnerRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/auth/register': {
       id: '/auth/register'
@@ -322,6 +342,7 @@ const rootRouteChildren: RootRouteChildren = {
   PortalRoute: PortalRouteWithChildren,
   AuthLoginRoute: AuthLoginRoute,
   AuthRegisterRoute: AuthRegisterRoute,
+  AuthRegisterLearnerRoute: AuthRegisterLearnerRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

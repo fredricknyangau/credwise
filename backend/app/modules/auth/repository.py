@@ -58,6 +58,22 @@ class AuthRepository:
         )
         return dict(row)  # type: ignore[arg-type]
 
+    async def insert_learner_user(
+        self,
+        id: UUID,
+        full_name: str,
+        phone_number: str,
+        password_hash: str,
+    ) -> dict[str, Any]:
+        row = await self.conn.fetchrow(
+            q.INSERT_LEARNER_USER,
+            id,
+            full_name,
+            phone_number,
+            password_hash,
+        )
+        return dict(row)  # type: ignore[arg-type]
+
     # ── Users ─────────────────────────────────────────────────────────────────
 
     async def find_user_by_phone(self, phone: str) -> dict[str, Any] | None:

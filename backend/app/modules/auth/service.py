@@ -33,6 +33,7 @@ from app.modules.auth.schemas import (
     LoginRequest,
     MFIRegistrationRequest,
     MFIRegistrationResponse,
+    LearnerRegistrationRequest,
     TokenResponse,
 )
 
@@ -85,6 +86,49 @@ class AuthService:
             admin_id=admin["id"],
             admin_full_name=admin["full_name"],
             role=admin["role"],
+        )
+
+    async def register_learner(
+        self, payload: LearnerRegistrationRequest
+    ) -> TokenResponse:
+        """
+        Atomically creates a new learner (client) user.
+        Issues a token pair upon successful registration to log them in immediately.
+        """
+        if await self.repo.phone_exists(payload.phone_number):
+            raise AlreadyExistsException("User with this phone number")
+
+        user_id = uuid.uuid4()
+        password_hash = hash_password(payload.password)
+
+        async with transaction(self.conn):
+            user = await self.repo.insert_learner_user(
+                id=user_id,
+                full_name=payload.full_name,
+                phone_number=payload.phone_number,
+                password_hash=password_hash,
+            )
+
+            # Automatically log the user in by issuing a token pair
+            access_token = create_access_token(
+                subject=user["id"],
+                role=user["role"],
+                institution_id=user.get("institution_id"),
+            )
+            raw_refresh, hashed_refresh = generate_refresh_token()
+            expires_at = create_refresh_token_expiry()
+
+            await self.repo.insert_refresh_token(
+                token_id=uuid.uuid4(),
+                user_id=user["id"],
+                token_hash=hashed_refresh,
+                expires_at=expires_at,
+            )
+
+        return TokenResponse(
+            access_token=access_token,
+            refresh_token=raw_refresh,
+            expires_in=settings.access_token_expire_minutes * 60,
         )
 
     async def login(self, payload: LoginRequest) -> TokenResponse:

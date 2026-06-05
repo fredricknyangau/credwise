@@ -10,6 +10,7 @@ from app.modules.auth.schemas import (
     LoginRequest,
     MFIRegistrationRequest,
     MFIRegistrationResponse,
+    LearnerRegistrationRequest,
     RefreshRequest,
     TokenResponse,
 )
@@ -35,6 +36,20 @@ async def register_mfi(
 ) -> APIResponse[MFIRegistrationResponse]:
     result = await svc.register_mfi(payload)
     return APIResponse.created(result)
+
+
+@router.post(
+    "/register-learner",
+    response_model=APIResponse[TokenResponse],
+    status_code=status.HTTP_201_CREATED,
+    summary="Register a new learner user and immediately log them in",
+)
+async def register_learner(
+    payload: LearnerRegistrationRequest,
+    svc: AuthService = Depends(_svc),
+) -> APIResponse[TokenResponse]:
+    tokens = await svc.register_learner(payload)
+    return APIResponse.created(tokens, "Learner registered successfully")
 
 
 @router.post(

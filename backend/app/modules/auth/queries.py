@@ -22,6 +22,14 @@ VALUES ($1, $2, 'mfi_admin', $3, $4, $5, TRUE)
 RETURNING id, institution_id, role, full_name, phone_number, is_active, created_at;
 """
 
+INSERT_LEARNER_USER = """
+INSERT INTO users (
+    id, role, full_name, phone_number, password_hash, is_active
+)
+VALUES ($1, 'client', $2, $3, $4, TRUE)
+RETURNING id, institution_id, role, full_name, phone_number, is_active, created_at;
+"""
+
 # ─── Login ────────────────────────────────────────────────────────────────────
 
 FIND_USER_BY_PHONE = """

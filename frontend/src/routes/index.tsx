@@ -55,8 +55,7 @@ function Landing() {
                 For Institutions <ArrowRight className="size-4" />
               </Link>
               <Link
-                to="/auth/login"
-                search={{ role: "client" }}
+                to="/auth/register-learner"
                 className="rounded-xl border border-border bg-card px-7 py-4 font-bold text-foreground transition-all hover:bg-secondary"
               >
                 Start Learning
@@ -153,7 +152,7 @@ function Landing() {
               "See exactly why your score is what it is",
               "Concrete next steps to improve it",
             ]}
-            cta={{ to: "/auth/login", label: "Start learning" }}
+            cta={{ to: "/auth/register-learner", label: "Start learning" }}
           />
         </div>
       </section>

@@ -140,11 +140,18 @@ function Login() {
           </p>
         </form>
 
-        {role === "mfi_admin" && (
+        {role === "mfi_admin" ? (
           <p className="text-center text-sm text-muted-foreground">
             New institution?{" "}
             <Link to="/auth/register" className="font-semibold text-brand-primary hover:underline">
               Register your MFI
+            </Link>
+          </p>
+        ) : (
+          <p className="text-center text-sm text-muted-foreground">
+            New to CredWise?{" "}
+            <Link to="/auth/register-learner" className="font-semibold text-brand-primary hover:underline">
+              Sign up as a Learner
             </Link>
           </p>
         )}

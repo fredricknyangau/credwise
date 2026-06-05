@@ -1,8 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useClients } from "@/lib/api/hooks";
-import { useMemo, useState } from "react";
-import { Search, Plus, ChevronRight } from "lucide-react";
+import { useMemo, useState, type FormEvent } from "react";
+import { Search, Plus, ChevronRight, X } from "lucide-react";
 import type { Client, ReadinessCategory } from "@/lib/types";
+import { api, USE_MOCKS } from "@/lib/api/client";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/mfi/clients")({
   head: () => ({ meta: [{ title: "Clients - MFI Dashboard" }] }),
@@ -17,14 +19,52 @@ const catColor: Record<ReadinessCategory, string> = {
 };
 
 function Clients() {
-  const { data, isLoading } = useClients();
+  const { data, isLoading, refetch } = useClients();
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState<"all" | ReadinessCategory>("all");
   const [open, setOpen] = useState<Client | null>(null);
 
+  const [isAdding, setIsAdding] = useState(false);
+  const [newClient, setNewClient] = useState({ fullName: "", phone: "", password: "" });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleAddClient = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!newClient.fullName || !newClient.phone || !newClient.password) {
+      toast.error("Please fill in all fields.");
+      return;
+    }
+    setIsSubmitting(true);
+    if (USE_MOCKS) {
+      toast.success("Client registered successfully (Mock mode)");
+      setIsAdding(false);
+      setNewClient({ fullName: "", phone: "", password: "" });
+      setIsSubmitting(false);
+    } else {
+      try {
+        await api.post("/users/", {
+          full_name: newClient.fullName,
+          phone_number: newClient.phone,
+          password: newClient.password,
+        });
+        toast.success("Learner client registered successfully!");
+        setIsAdding(false);
+        setNewClient({ fullName: "", phone: "", password: "" });
+        refetch();
+      } catch (err: any) {
+        toast.error(
+          err.response?.data?.message ||
+            "Failed to register client user. Make sure phone number is unique and password is strong."
+        );
+      } finally {
+        setIsSubmitting(false);
+      }
+    }
+  };
+
   const filtered = useMemo(() => {
     const list = data ?? [];
-    return list.filter((c) => {
+    return list.filter((c: Client) => {
       const matchesQ =
         c.name.toLowerCase().includes(q.toLowerCase()) ||
         c.cooperative.toLowerCase().includes(q.toLowerCase());
@@ -42,7 +82,10 @@ function Clients() {
             Track, filter, and review every client in your portfolio.
           </p>
         </div>
-        <button className="inline-flex items-center gap-2 rounded-xl bg-brand-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-brand transition-colors hover:bg-brand-secondary">
+        <button
+          onClick={() => setIsAdding(true)}
+          className="inline-flex items-center gap-2 rounded-xl bg-brand-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-brand transition-colors hover:bg-brand-secondary"
+        >
           <Plus className="size-4" /> Add client
         </button>
       </header>
@@ -93,7 +136,7 @@ function Clients() {
                 </td>
               </tr>
             )}
-            {filtered.map((c) => (
+            {filtered.map((c: Client) => (
               <tr
                 key={c.id}
                 onClick={() => setOpen(c)}
@@ -214,6 +257,86 @@ function Clients() {
             >
               Close
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Add Client Dialog */}
+      {isAdding && (
+        <div
+          className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={() => setIsAdding(false)}
+        >
+          <div
+            className="w-full max-w-md rounded-2xl border border-border bg-card p-6 shadow-xl relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setIsAdding(false)}
+              className="absolute right-4 top-4 p-1.5 rounded-lg text-muted-foreground hover:bg-secondary transition-colors"
+            >
+              <X className="size-4" />
+            </button>
+            
+            <h3 className="font-display text-xl font-bold mb-1">Add New Learner Client</h3>
+            <p className="text-sm text-muted-foreground mb-6">
+              Create a new learner profile. They can sign in immediately using their phone number.
+            </p>
+
+            <form onSubmit={handleAddClient} className="space-y-4">
+              <label className="block text-sm">
+                <span className="mb-1 block font-medium">Full Name</span>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Koffi Anan"
+                  value={newClient.fullName}
+                  onChange={(e) => setNewClient((c) => ({ ...c, fullName: e.target.value }))}
+                  className="w-full rounded-lg border border-input bg-background px-4 py-2.5 text-sm outline-none ring-brand-secondary focus:ring-2"
+                />
+              </label>
+
+              <label className="block text-sm">
+                <span className="mb-1 block font-medium">Phone Number</span>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. +254712345678"
+                  value={newClient.phone}
+                  onChange={(e) => setNewClient((c) => ({ ...c, phone: e.target.value }))}
+                  className="w-full rounded-lg border border-input bg-background px-4 py-2.5 text-sm outline-none ring-brand-secondary focus:ring-2"
+                />
+              </label>
+
+              <label className="block text-sm">
+                <span className="mb-1 block font-medium">Initial Password</span>
+                <input
+                  type="password"
+                  required
+                  placeholder="Minimum 8 characters"
+                  value={newClient.password}
+                  onChange={(e) => setNewClient((c) => ({ ...c, password: e.target.value }))}
+                  className="w-full rounded-lg border border-input bg-background px-4 py-2.5 text-sm outline-none ring-brand-secondary focus:ring-2"
+                />
+              </label>
+
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsAdding(false)}
+                  className="flex-1 rounded-xl border border-border bg-card py-2.5 text-sm font-semibold hover:bg-secondary transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="flex-1 rounded-xl bg-brand-primary py-2.5 text-sm font-semibold text-primary-foreground shadow-brand hover:bg-brand-secondary transition-colors disabled:opacity-50"
+                >
+                  {isSubmitting ? "Creating..." : "Create Account"}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

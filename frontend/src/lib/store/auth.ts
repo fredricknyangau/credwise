@@ -7,6 +7,7 @@ interface AuthState {
   token: string | null;
   hydrated: boolean;
   login: (email: string, role: UserRole, name?: string, organization?: string) => void;
+  setAuth: (user: User, token: string) => void;
   logout: () => void;
   setHydrated: () => void;
 }
@@ -28,6 +29,7 @@ export const useAuth = create<AuthState>()(
           },
           token: "mock-jwt-" + Math.random().toString(36).slice(2),
         }),
+      setAuth: (user, token) => set({ user, token }),
       logout: () => set({ user: null, token: null }),
       setHydrated: () => set({ hydrated: true }),
     }),

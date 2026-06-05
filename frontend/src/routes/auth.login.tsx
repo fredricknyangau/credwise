@@ -13,23 +13,62 @@ export const Route = createFileRoute("/auth/login")({
   component: Login,
 });
 
+import { api, USE_MOCKS } from "@/lib/api/client";
+
 function Login() {
   const navigate = useNavigate();
   const search = Route.useSearch();
   const login = useAuth((s) => s.login);
+  const setAuth = useAuth((s) => s.setAuth);
   const [role, setRole] = useState<UserRole>(search.role);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!email || !password) {
       toast.error("Please fill in both fields.");
       return;
     }
-    login(email, role);
-    toast.success(`Welcome back to CredWise`);
-    navigate({ to: role === "mfi_admin" ? "/mfi" : "/portal" });
+
+    if (USE_MOCKS) {
+      login(email, role);
+      toast.success(`Welcome back to CredWise`);
+      navigate({ to: role === "mfi_admin" ? "/mfi" : "/portal" });
+    } else {
+      try {
+        const loginRes = await api.post("/auth/login", {
+          phone_number: email,
+          password: password,
+        });
+        const { access_token } = loginRes.data.data;
+
+        // Set token for this request
+        api.defaults.headers.common["Authorization"] = `Bearer ${access_token}`;
+
+        const profileRes = await api.get("/users/me");
+        const p = profileRes.data.data;
+
+        setAuth(
+          {
+            id: p.id,
+            name: p.full_name,
+            email: p.phone_number,
+            role: p.role as UserRole,
+            organization: p.institution_id || undefined,
+          },
+          access_token
+        );
+
+        toast.success(`Welcome back, ${p.full_name}`);
+        navigate({ to: p.role === "mfi_admin" ? "/mfi" : "/portal" });
+      } catch (err: any) {
+        toast.error(
+          err.response?.data?.message ||
+            "Authentication failed. Please verify your phone number and password."
+        );
+      }
+    }
   };
 
   return (
@@ -60,14 +99,23 @@ function Login() {
           className="space-y-4 rounded-2xl border border-border bg-card p-6 shadow-soft"
         >
           <label className="block text-sm">
-            <span className="mb-1 block font-medium">Email</span>
+            <span className="mb-1 block font-medium">
+              {USE_MOCKS ? "Email" : "Phone Number"}
+            </span>
             <input
-              type="email"
-              autoComplete="email"
+              type={USE_MOCKS ? "email" : "text"}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full rounded-lg border border-input bg-background px-4 py-3 text-sm outline-none ring-brand-secondary focus:ring-2"
-              placeholder={role === "mfi_admin" ? "admin@coop.org" : "you@example.com"}
+              placeholder={
+                USE_MOCKS
+                  ? role === "mfi_admin"
+                    ? "admin@coop.org"
+                    : "you@example.com"
+                  : role === "mfi_admin"
+                    ? "+254711100001"
+                    : "+254722000001"
+              }
             />
           </label>
           <label className="block text-sm">

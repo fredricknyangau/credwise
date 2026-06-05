@@ -35,6 +35,12 @@ class UserRead(BaseModel):
     phone_number: str
     is_active: bool
     created_at: datetime
+    readiness_score: float = 0.0
+    category: str = "Low Readiness"
+    business_type: str = "N/A"
+    cooperative_member: bool = False
+    literacy_progress: float = 0.0
+
 
 
 class UpdateUserStatusRequest(BaseModel):

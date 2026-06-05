@@ -44,7 +44,7 @@ WITH literacy_data AS (
         COUNT(DISTINCT ml.id) AS total_modules,
         COUNT(DISTINCT CASE WHEN prog.pct = 100 THEN ml.id END) AS completed_modules
     FROM literacy_modules ml
-    CROSS JOIN (
+    LEFT JOIN (
         SELECT ml2.module_id,
                CASE WHEN total.cnt = 0 THEN 0
                     ELSE ROUND((done.cnt::numeric / total.cnt) * 100, 2)

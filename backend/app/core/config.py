@@ -49,10 +49,20 @@ class Settings(BaseSettings):
     rate_limit_requests: int = 100
     rate_limit_window_seconds: int = 60
 
+    @field_validator("allowed_origins", mode="before")
+    @classmethod
+    def assemble_cors_origins(cls, v: str | list[str]) -> list[str]:
+        if isinstance(v, str) and not v.startswith("["):
+            return [i.strip() for i in v.split(",") if i.strip()]
+        if isinstance(v, list):
+            return v
+        import json
+        return json.loads(v)
+
     @field_validator("database_url")
     @classmethod
     def database_url_must_be_asyncpg(cls, v: str) -> str:
-        if "postgresql" not in v:
+        if "postgresql" not in v and "postgres" not in v:
             raise ValueError("DATABASE_URL must be a PostgreSQL connection string")
         # Normalise to asyncpg driver scheme
         v = v.replace("postgresql://", "postgresql+asyncpg://", 1)

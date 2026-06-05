@@ -78,7 +78,7 @@ completed_count AS (
 SELECT
     $1::uuid AS module_id,
     $2::uuid AS user_id,
-    mlc.total,
+    mlc.total AS total_lessons,
     cc.completed,
     CASE WHEN mlc.total = 0 THEN 0
          ELSE ROUND((cc.completed::numeric / mlc.total) * 100, 2)

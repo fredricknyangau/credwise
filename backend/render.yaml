@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: credwise-api
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "alembic upgrade head && python scripts/seed.py && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: ALLOWED_ORIGINS
+        sync: false
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: JWT_ALGORITHM
+        value: HS256
+      - key: MFI_ADMIN_API_KEY
+        generateValue: true

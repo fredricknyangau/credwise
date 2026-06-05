@@ -100,7 +100,7 @@ export const useModules = () =>
     queryFn: async () => {
       if (USE_MOCKS) return mock.modules();
       const res = await api.get("/literacy/modules");
-      return res.data.data.map((m: any) => ({
+      return res.data.data.items.map((m: any) => ({
         id: m.id,
         title: m.title,
         description: m.description,
@@ -122,20 +122,29 @@ export const useModule = (id: string) =>
     queryKey: qk.module(id),
     queryFn: async () => {
       if (USE_MOCKS) return mock.module(id);
-      const res = await api.get(`/literacy/modules/${id}`);
-      const m = res.data.data;
+      
+      const [moduleRes, lessonsRes, progressRes] = await Promise.all([
+        api.get(`/literacy/modules/${id}`),
+        api.get(`/literacy/modules/${id}/lessons`),
+        api.get(`/literacy/modules/${id}/progress`).catch(() => ({ data: { data: { completed: 0, percentage: 0 } } }))
+      ]);
+      
+      const m = moduleRes.data.data;
+      const lessons = lessonsRes.data.data || [];
+      const progress = progressRes.data.data;
+      
       return {
         id: m.id,
         title: m.title,
         description: m.description,
         durationMin: m.estimated_minutes,
         category: m.difficulty_level,
-        progress: Math.round(m.progress_percentage || 0),
-        lessons: (m.lessons || []).map((l: any) => ({
+        progress: Math.round(progress.percentage || 0),
+        lessons: lessons.map((l: any, idx: number) => ({
           id: l.id,
           title: l.title,
           body: l.content,
-          completed: l.is_completed,
+          completed: idx < progress.completed,
         })),
       };
     },
@@ -147,17 +156,24 @@ export const useQuiz = (id: string) =>
     queryKey: qk.quiz(id),
     queryFn: async () => {
       if (USE_MOCKS) return mock.quiz(id);
-      const res = await api.get(`/quizzes/${id}`);
-      const q = res.data.data;
+      
+      const [quizRes, questionsRes] = await Promise.all([
+        api.get(`/quizzes/${id}`),
+        api.get(`/quizzes/${id}/questions`)
+      ]);
+      
+      const q = quizRes.data.data;
+      const questions = questionsRes.data.data || [];
+      
       return {
         id: q.id,
         moduleId: q.module_id,
         title: q.title,
-        questions: (q.questions || []).map((qn: any) => ({
+        questions: questions.map((qn: any) => ({
           id: qn.id,
           prompt: qn.question,
           options: qn.options,
-          correctIndex: qn.options.indexOf(qn.correct_answer),
+          correctIndex: qn.correct_answer ? qn.options.indexOf(qn.correct_answer) : -1,
           explanation: "Check the course material for more information.",
         })),
       };
@@ -170,17 +186,24 @@ export const useQuizByModule = (moduleId: string) =>
     queryKey: qk.quizByModule(moduleId),
     queryFn: async () => {
       if (USE_MOCKS) return mock.quizByModule(moduleId);
+      
+      // First get the quiz for the module
       const res = await api.get(`/quizzes/modules/${moduleId}`);
       const q = res.data.data;
+      
+      // Then fetch its questions
+      const questionsRes = await api.get(`/quizzes/${q.id}/questions`).catch(() => ({ data: { data: [] } }));
+      const questions = questionsRes.data.data || [];
+      
       return {
         id: q.id,
         moduleId: q.module_id,
         title: q.title,
-        questions: (q.questions || []).map((qn: any) => ({
+        questions: questions.map((qn: any) => ({
           id: qn.id,
           prompt: qn.question,
           options: qn.options,
-          correctIndex: qn.options.indexOf(qn.correct_answer),
+          correctIndex: qn.correct_answer ? qn.options.indexOf(qn.correct_answer) : -1,
           explanation: "Check the course material for more information.",
         })),
       };

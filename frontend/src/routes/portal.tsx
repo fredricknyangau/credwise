@@ -9,9 +9,11 @@ export const Route = createFileRoute("/portal")({
 function PortalLayout() {
   return (
     <RequireAuth role="client">
-      <div className="min-h-screen bg-brand-surface pb-24 md:pb-0">
+      <div className="mx-auto flex min-h-screen w-full max-w-md flex-col overflow-hidden bg-brand-surface shadow-2xl ring-1 ring-border sm:my-8 sm:h-[850px] sm:min-h-[850px] sm:rounded-[2.5rem]">
         <PortalChrome />
-        <Outlet />
+        <div className="flex-1 overflow-y-auto pb-24">
+          <Outlet />
+        </div>
       </div>
     </RequireAuth>
   );

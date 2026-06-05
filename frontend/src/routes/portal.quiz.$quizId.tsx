@@ -136,20 +136,15 @@ function QuizView() {
                 disabled={picked !== null}
                 onClick={() => setPicked(i)}
                 className={`flex w-full items-center justify-between rounded-xl border-2 px-5 py-4 text-left text-sm font-medium transition-all ${
-                  showFeedback
-                    ? isCorrect
-                      ? "border-brand-secondary bg-brand-secondary/10"
-                      : isPicked
-                        ? "border-destructive bg-destructive/10"
-                        : "border-border opacity-60"
+                  picked !== null
+                    ? isPicked
+                      ? "border-brand-primary bg-brand-primary/10"
+                      : "border-border opacity-60"
                     : "border-border hover:border-brand-primary hover:bg-brand-primary/5"
                 }`}
               >
                 {opt}
-                {showFeedback && isCorrect && <Check className="size-5 text-brand-secondary" />}
-                {showFeedback && isPicked && !isCorrect && (
-                  <X className="size-5 text-destructive" />
-                )}
+                {isPicked && <Check className="size-5 text-brand-primary" />}
               </button>
             );
           })}

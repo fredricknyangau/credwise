@@ -41,6 +41,14 @@ async def seed() -> None:
 
 
 async def _seed_all(conn: asyncpg.Connection) -> None:
+    # Clear existing data to ensure idempotency
+    await conn.execute("""
+        TRUNCATE TABLE 
+            mfi_institutions, users, client_financial_profiles, 
+            literacy_modules, module_lessons, quizzes, quiz_questions 
+        CASCADE;
+    """)
+    print("  ✓ Cleared existing data")
     # ── Institutions ──────────────────────────────────────────────────────────
     inst1_id = uuid.uuid4()
     inst2_id = uuid.uuid4()

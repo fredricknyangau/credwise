@@ -19,6 +19,7 @@ if db_url:
     # Ensure asyncpg driver
     db_url = db_url.replace("postgresql://", "postgresql+asyncpg://", 1)
     db_url = db_url.replace("postgres://", "postgresql+asyncpg://", 1)
+    db_url = db_url.replace("sslmode=", "ssl=")
     config.set_main_option("sqlalchemy.url", db_url)
 
 if config.config_file_name is not None:

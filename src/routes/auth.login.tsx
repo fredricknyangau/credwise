@@ -1,15 +1,15 @@
+import { PublicNav } from "@/components/PublicNav";
+import { useAuth } from "@/lib/store/auth";
+import type { UserRole } from "@/lib/types";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
-import { useAuth } from "@/lib/store/auth";
-import { PublicNav } from "@/components/PublicNav";
 import { toast } from "sonner";
-import type { UserRole } from "@/lib/types";
 
 export const Route = createFileRoute("/auth/login")({
   validateSearch: (s: Record<string, unknown>) => ({
     role: (s.role === "mfi_admin" || s.role === "client" ? s.role : "client") as UserRole,
   }),
-  head: () => ({ meta: [{ title: "Sign in — CrediPath" }] }),
+  head: () => ({ meta: [{ title: "Sign in - CredWise" }] }),
   component: Login,
 });
 
@@ -28,7 +28,7 @@ function Login() {
       return;
     }
     login(email, role);
-    toast.success(`Welcome back to CrediPath`);
+    toast.success(`Welcome back to CredWise`);
     navigate({ to: role === "mfi_admin" ? "/mfi" : "/portal" });
   };
 
@@ -38,7 +38,7 @@ function Login() {
       <main className="mx-auto grid max-w-md gap-6 px-4 py-16">
         <div>
           <h1 className="font-display text-3xl font-bold">Welcome back</h1>
-          <p className="mt-2 text-muted-foreground">Sign in to continue your CrediPath journey.</p>
+          <p className="mt-2 text-muted-foreground">Sign in to continue your CredWise journey.</p>
         </div>
 
         <div className="grid grid-cols-2 gap-2 rounded-xl bg-secondary p-1">
@@ -55,7 +55,10 @@ function Login() {
           ))}
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4 rounded-2xl border border-border bg-card p-6 shadow-soft">
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-4 rounded-2xl border border-border bg-card p-6 shadow-soft"
+        >
           <label className="block text-sm">
             <span className="mb-1 block font-medium">Email</span>
             <input
@@ -85,7 +88,7 @@ function Login() {
             Sign in
           </button>
           <p className="text-center text-xs text-muted-foreground">
-            Prototype — any email/password works.
+            Prototype - any email/password works.
           </p>
         </form>
 

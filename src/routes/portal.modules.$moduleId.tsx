@@ -1,10 +1,10 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useModule, useQuizByModule } from "@/lib/api/hooks";
-import { useState } from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, CheckCircle2, ChevronRight, Circle } from "lucide-react";
+import { useState } from "react";
 
 export const Route = createFileRoute("/portal/modules/$moduleId")({
-  head: () => ({ meta: [{ title: "Lesson — CrediPath" }] }),
+  head: () => ({ meta: [{ title: "Lesson - CredWise" }] }),
   component: ModuleView,
 });
 
@@ -22,16 +22,24 @@ function ModuleView() {
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-6">
-      <Link to="/portal" className="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground">
+      <Link
+        to="/portal"
+        className="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground"
+      >
         <ArrowLeft className="size-4" /> Back to learning
       </Link>
 
       <header className="mb-6">
-        <p className="text-xs font-bold uppercase tracking-widest text-brand-secondary">{module.category}</p>
+        <p className="text-xs font-bold uppercase tracking-widest text-brand-secondary">
+          {module.category}
+        </p>
         <h1 className="mt-1 font-display text-3xl font-bold">{module.title}</h1>
         <p className="mt-1 text-sm text-muted-foreground">{module.description}</p>
         <div className="mt-4 h-2 w-full overflow-hidden rounded-full bg-secondary">
-          <div className="h-full rounded-full bg-brand-secondary" style={{ width: `${module.progress}%` }} />
+          <div
+            className="h-full rounded-full bg-brand-secondary"
+            style={{ width: `${module.progress}%` }}
+          />
         </div>
       </header>
 
@@ -47,7 +55,9 @@ function ModuleView() {
               }`}
             >
               {l.completed ? (
-                <CheckCircle2 className={`size-4 shrink-0 ${selected === i ? "text-background" : "text-brand-secondary"}`} />
+                <CheckCircle2
+                  className={`size-4 shrink-0 ${selected === i ? "text-background" : "text-brand-secondary"}`}
+                />
               ) : (
                 <Circle className="size-4 shrink-0" />
               )}
@@ -81,7 +91,9 @@ function ModuleView() {
               </button>
             ) : quiz ? (
               <button
-                onClick={() => navigate({ to: "/portal/quiz/$quizId", params: { quizId: quiz.id } })}
+                onClick={() =>
+                  navigate({ to: "/portal/quiz/$quizId", params: { quizId: quiz.id } })
+                }
                 className="inline-flex items-center gap-2 rounded-xl bg-brand-accent px-5 py-2.5 text-sm font-bold text-white hover:opacity-90"
               >
                 Take the quiz <ChevronRight className="size-4" />
@@ -103,7 +115,9 @@ function NotFound() {
   return (
     <div className="mx-auto max-w-md px-4 py-20 text-center">
       <h2 className="font-display text-2xl font-bold">Module not found</h2>
-      <Link to="/portal" className="mt-4 inline-block font-semibold text-brand-primary">Back to learning</Link>
+      <Link to="/portal" className="mt-4 inline-block font-semibold text-brand-primary">
+        Back to learning
+      </Link>
     </div>
   );
 }

@@ -1,5 +1,5 @@
-import { Link } from "@tanstack/react-router";
 import { useAuth } from "@/lib/store/auth";
+import { Link } from "@tanstack/react-router";
 import { Square } from "lucide-react";
 
 export function PublicNav() {
@@ -12,14 +12,20 @@ export function PublicNav() {
             <Square className="size-4 text-primary-foreground" strokeWidth={2.5} />
           </div>
           <span className="font-display text-xl font-bold tracking-tight text-brand-primary">
-            CrediPath
+            CredWise
           </span>
         </Link>
         <div className="hidden items-center gap-8 md:flex">
-          <Link to="/mfi" className="text-sm font-medium text-muted-foreground transition-colors hover:text-brand-primary">
+          <Link
+            to="/mfi"
+            className="text-sm font-medium text-muted-foreground transition-colors hover:text-brand-primary"
+          >
             MFI Dashboard
           </Link>
-          <Link to="/portal" className="text-sm font-medium text-muted-foreground transition-colors hover:text-brand-primary">
+          <Link
+            to="/portal"
+            className="text-sm font-medium text-muted-foreground transition-colors hover:text-brand-primary"
+          >
             Learning Portal
           </Link>
           {user ? (

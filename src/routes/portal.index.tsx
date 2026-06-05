@@ -1,10 +1,10 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
 import { useModules, useReadiness } from "@/lib/api/hooks";
 import { useAuth } from "@/lib/store/auth";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, CheckCircle2, Clock, Play, Sparkles } from "lucide-react";
 
 export const Route = createFileRoute("/portal/")({
-  head: () => ({ meta: [{ title: "Your learning path — CrediPath" }] }),
+  head: () => ({ meta: [{ title: "Your learning path - CredWise" }] }),
   component: LearnHome,
 });
 
@@ -35,15 +35,31 @@ function LearnHome() {
         className="mb-6 flex items-center justify-between rounded-3xl bg-ink p-6 text-background transition-all hover:-translate-y-0.5"
       >
         <div>
-          <p className="text-xs font-semibold uppercase tracking-widest text-brand-secondary">Your score</p>
-          <p className="mt-2 font-display text-5xl font-black">{readiness?.score ?? "—"}</p>
-          <p className="text-sm text-muted-foreground">{readiness?.category} — tap to view details</p>
+          <p className="text-xs font-semibold uppercase tracking-widest text-brand-secondary">
+            Your score
+          </p>
+          <p className="mt-2 font-display text-5xl font-black">{readiness?.score ?? "-"}</p>
+          <p className="text-sm text-muted-foreground">
+            {readiness?.category} - tap to view details
+          </p>
         </div>
         <div className="relative grid size-24 place-items-center">
           <svg className="size-24 -rotate-90" viewBox="0 0 100 100">
-            <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="8" />
             <circle
-              cx="50" cy="50" r="42" fill="none" stroke="#059669" strokeWidth="8"
+              cx="50"
+              cy="50"
+              r="42"
+              fill="none"
+              stroke="rgba(255,255,255,0.1)"
+              strokeWidth="8"
+            />
+            <circle
+              cx="50"
+              cy="50"
+              r="42"
+              fill="none"
+              stroke="#059669"
+              strokeWidth="8"
               strokeLinecap="round"
               strokeDasharray={`${2 * Math.PI * 42 * ((readiness?.score ?? 0) / 100)} ${2 * Math.PI * 42}`}
             />
@@ -72,7 +88,10 @@ function LearnHome() {
                 Module · {current.durationMin} min · {current.progress}% done
               </p>
               <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-secondary">
-                <div className="h-full rounded-full bg-brand-secondary transition-all" style={{ width: `${current.progress}%` }} />
+                <div
+                  className="h-full rounded-full bg-brand-secondary transition-all"
+                  style={{ width: `${current.progress}%` }}
+                />
               </div>
             </div>
           </div>
@@ -106,20 +125,29 @@ function LearnHome() {
               params={{ moduleId: m.id }}
               className="flex items-center gap-4 rounded-2xl border border-border bg-card p-4 transition-colors hover:bg-secondary/30"
             >
-              <div className={`grid size-12 shrink-0 place-items-center rounded-xl ${
-                m.progress === 100
-                  ? "bg-brand-secondary/15 text-brand-secondary"
-                  : m.progress > 0
-                  ? "bg-brand-primary/10 text-brand-primary"
-                  : "bg-secondary text-muted-foreground"
-              }`}>
-                {m.progress === 100 ? <CheckCircle2 className="size-5" /> : <Clock className="size-5" />}
+              <div
+                className={`grid size-12 shrink-0 place-items-center rounded-xl ${
+                  m.progress === 100
+                    ? "bg-brand-secondary/15 text-brand-secondary"
+                    : m.progress > 0
+                      ? "bg-brand-primary/10 text-brand-primary"
+                      : "bg-secondary text-muted-foreground"
+                }`}
+              >
+                {m.progress === 100 ? (
+                  <CheckCircle2 className="size-5" />
+                ) : (
+                  <Clock className="size-5" />
+                )}
               </div>
               <div className="min-w-0 flex-1">
                 <p className="font-semibold">{m.title}</p>
                 <p className="truncate text-xs text-muted-foreground">{m.description}</p>
                 <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-secondary">
-                  <div className="h-full rounded-full bg-brand-secondary" style={{ width: `${m.progress}%` }} />
+                  <div
+                    className="h-full rounded-full bg-brand-secondary"
+                    style={{ width: `${m.progress}%` }}
+                  />
                 </div>
               </div>
               <ArrowRight className="size-4 text-muted-foreground" />

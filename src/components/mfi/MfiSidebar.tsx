@@ -1,5 +1,5 @@
-import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@/lib/store/auth";
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { BarChart3, LayoutDashboard, LogOut, Square, Users } from "lucide-react";
 
 const items = [
@@ -23,7 +23,7 @@ export function MfiSidebar() {
           <Square className="size-4 text-primary-foreground" strokeWidth={2.5} />
         </div>
         <span className="font-display text-xl font-bold tracking-tight text-brand-primary">
-          CrediPath
+          CredWise
         </span>
       </Link>
       <div className="px-4 py-5">

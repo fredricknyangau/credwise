@@ -1,16 +1,16 @@
+import { Toaster } from "@/components/ui/sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
+  HeadContent,
   Outlet,
+  Scripts,
   createRootRouteWithContext,
   useRouter,
-  HeadContent,
-  Scripts,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
-import { Toaster } from "@/components/ui/sonner";
 
-import appCss from "../styles.css?url";
 import { reportError } from "../lib/error-reporter";
+import appCss from "../styles.css?url";
 
 function NotFoundComponent() {
   return (
@@ -53,7 +53,10 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
           >
             Try again
           </button>
-          <a href="/" className="rounded-full border border-input bg-background px-5 py-2.5 text-sm font-medium hover:bg-accent">
+          <a
+            href="/"
+            className="rounded-full border border-input bg-background px-5 py-2.5 text-sm font-medium hover:bg-accent"
+          >
             Go home
           </a>
         </div>
@@ -67,13 +70,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "CrediPath — Financial literacy and ethical credit readiness" },
+      { title: "CredWise - Financial literacy and ethical credit readiness" },
       {
         name: "description",
         content:
-          "CrediPath helps microfinance institutions and unbanked users build credit readiness through transparent financial literacy.",
+          "CredWise helps microfinance institutions and unbanked users build credit readiness through transparent financial literacy.",
       },
-      { property: "og:title", content: "CrediPath" },
+      { property: "og:title", content: "CredWise" },
       { property: "og:description", content: "Ethical credit readiness for the unbanked." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

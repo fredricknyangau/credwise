@@ -5,7 +5,7 @@ import { Search, Plus, ChevronRight } from "lucide-react";
 import type { Client, ReadinessCategory } from "@/lib/types";
 
 export const Route = createFileRoute("/mfi/clients")({
-  head: () => ({ meta: [{ title: "Clients — MFI Dashboard" }] }),
+  head: () => ({ meta: [{ title: "Clients - MFI Dashboard" }] }),
   component: Clients,
 });
 
@@ -25,7 +25,9 @@ function Clients() {
   const filtered = useMemo(() => {
     const list = data ?? [];
     return list.filter((c) => {
-      const matchesQ = c.name.toLowerCase().includes(q.toLowerCase()) || c.cooperative.toLowerCase().includes(q.toLowerCase());
+      const matchesQ =
+        c.name.toLowerCase().includes(q.toLowerCase()) ||
+        c.cooperative.toLowerCase().includes(q.toLowerCase());
       const matchesF = filter === "all" || c.category === filter;
       return matchesQ && matchesF;
     });
@@ -36,7 +38,9 @@ function Clients() {
       <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="font-display text-3xl font-bold">Clients</h1>
-          <p className="mt-1 text-muted-foreground">Track, filter, and review every client in your portfolio.</p>
+          <p className="mt-1 text-muted-foreground">
+            Track, filter, and review every client in your portfolio.
+          </p>
         </div>
         <button className="inline-flex items-center gap-2 rounded-xl bg-brand-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-brand transition-colors hover:bg-brand-secondary">
           <Plus className="size-4" /> Add client
@@ -83,10 +87,18 @@ function Clients() {
           </thead>
           <tbody className="divide-y divide-border">
             {isLoading && (
-              <tr><td colSpan={7} className="px-5 py-10 text-center text-muted-foreground">Loading clients…</td></tr>
+              <tr>
+                <td colSpan={7} className="px-5 py-10 text-center text-muted-foreground">
+                  Loading clients…
+                </td>
+              </tr>
             )}
             {filtered.map((c) => (
-              <tr key={c.id} onClick={() => setOpen(c)} className="cursor-pointer transition-colors hover:bg-secondary/40">
+              <tr
+                key={c.id}
+                onClick={() => setOpen(c)}
+                className="cursor-pointer transition-colors hover:bg-secondary/40"
+              >
                 <td className="px-5 py-4">
                   <div className="flex items-center gap-3">
                     <div className="grid size-9 place-items-center rounded-full bg-brand-secondary/15 text-sm font-bold text-brand-primary">
@@ -98,27 +110,44 @@ function Clients() {
                     </div>
                   </div>
                 </td>
-                <td className="px-5 py-4 hidden md:table-cell text-muted-foreground">{c.cooperative}</td>
+                <td className="px-5 py-4 hidden md:table-cell text-muted-foreground">
+                  {c.cooperative}
+                </td>
                 <td className="px-5 py-4">
                   <div className="flex items-center gap-2.5">
                     <span className="w-9 font-mono text-xs">{c.literacyProgress}%</span>
                     <div className="h-1.5 w-24 overflow-hidden rounded-full bg-secondary">
-                      <div className="h-full bg-brand-secondary" style={{ width: `${c.literacyProgress}%` }} />
+                      <div
+                        className="h-full bg-brand-secondary"
+                        style={{ width: `${c.literacyProgress}%` }}
+                      />
                     </div>
                   </div>
                 </td>
-                <td className="px-5 py-4 hidden sm:table-cell font-mono text-sm font-semibold">{c.readinessScore}</td>
+                <td className="px-5 py-4 hidden sm:table-cell font-mono text-sm font-semibold">
+                  {c.readinessScore}
+                </td>
                 <td className="px-5 py-4">
-                  <span className={`rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${catColor[c.category]}`}>
+                  <span
+                    className={`rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${catColor[c.category]}`}
+                  >
                     {c.category}
                   </span>
                 </td>
-                <td className="px-5 py-4 hidden lg:table-cell text-xs text-muted-foreground">{c.lastActive}</td>
-                <td className="px-5 py-4 text-right text-muted-foreground"><ChevronRight className="inline size-4" /></td>
+                <td className="px-5 py-4 hidden lg:table-cell text-xs text-muted-foreground">
+                  {c.lastActive}
+                </td>
+                <td className="px-5 py-4 text-right text-muted-foreground">
+                  <ChevronRight className="inline size-4" />
+                </td>
               </tr>
             ))}
             {!isLoading && !filtered.length && (
-              <tr><td colSpan={7} className="px-5 py-10 text-center text-muted-foreground">No clients match those filters.</td></tr>
+              <tr>
+                <td colSpan={7} className="px-5 py-10 text-center text-muted-foreground">
+                  No clients match those filters.
+                </td>
+              </tr>
             )}
           </tbody>
         </table>
@@ -126,15 +155,23 @@ function Clients() {
 
       {/* Detail drawer */}
       {open && (
-        <div className="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm" onClick={() => setOpen(null)}>
-          <div className="absolute right-0 top-0 h-full w-full max-w-md overflow-y-auto bg-card p-8 shadow-xl" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm"
+          onClick={() => setOpen(null)}
+        >
+          <div
+            className="absolute right-0 top-0 h-full w-full max-w-md overflow-y-auto bg-card p-8 shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="mb-6 flex items-center gap-4">
               <div className="grid size-14 place-items-center rounded-full bg-brand-primary text-xl font-bold text-primary-foreground">
                 {open.name[0]}
               </div>
               <div>
                 <h3 className="font-display text-xl font-bold">{open.name}</h3>
-                <p className="text-sm text-muted-foreground">{open.cooperative} · {open.phone}</p>
+                <p className="text-sm text-muted-foreground">
+                  {open.cooperative} · {open.phone}
+                </p>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
@@ -142,24 +179,39 @@ function Clients() {
               <Stat label="Literacy" value={`${open.literacyProgress}%`} />
             </div>
             <div className="mt-5 rounded-xl bg-secondary/50 p-4">
-              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Category</p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Category
+              </p>
               <p className="mt-1 font-display text-2xl font-bold">{open.category}</p>
               <p className="mt-2 text-sm text-muted-foreground">
-                {open.category === "Strong" && "Eligible for highest loan tier. Recommend periodic literacy refreshers."}
-                {open.category === "Ready" && "Eligible for standard credit. Encourage savings consistency."}
-                {open.category === "Developing" && "Promising but needs to complete more modules and build savings history."}
-                {open.category === "Building" && "Early-stage learner. Focus on basics of savings and weekly check-ins."}
+                {open.category === "Strong" &&
+                  "Eligible for highest loan tier. Recommend periodic literacy refreshers."}
+                {open.category === "Ready" &&
+                  "Eligible for standard credit. Encourage savings consistency."}
+                {open.category === "Developing" &&
+                  "Promising but needs to complete more modules and build savings history."}
+                {open.category === "Building" &&
+                  "Early-stage learner. Focus on basics of savings and weekly check-ins."}
               </p>
             </div>
             <div className="mt-5 space-y-2">
-              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Recent activity</p>
-              {["Completed lesson: Setting a savings goal", "Quiz passed: Basics of Savings (90%)", "Profile updated: business type"].map((a) => (
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Recent activity
+              </p>
+              {[
+                "Completed lesson: Setting a savings goal",
+                "Quiz passed: Basics of Savings (90%)",
+                "Profile updated: business type",
+              ].map((a) => (
                 <div key={a} className="flex items-start gap-2 text-sm">
                   <span className="mt-1.5 size-1.5 rounded-full bg-brand-secondary" /> {a}
                 </div>
               ))}
             </div>
-            <button onClick={() => setOpen(null)} className="mt-8 w-full rounded-xl border border-border bg-card py-3 text-sm font-semibold hover:bg-secondary">
+            <button
+              onClick={() => setOpen(null)}
+              className="mt-8 w-full rounded-xl border border-border bg-card py-3 text-sm font-semibold hover:bg-secondary"
+            >
               Close
             </button>
           </div>
@@ -172,7 +224,9 @@ function Clients() {
 function Stat({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div className="rounded-xl border border-border p-4">
-      <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{label}</p>
+      <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+        {label}
+      </p>
       <p className="mt-1 font-display text-2xl font-bold">{value}</p>
     </div>
   );

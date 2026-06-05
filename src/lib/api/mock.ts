@@ -43,8 +43,8 @@ const MODULES: LiteracyModule[] = [
     category: "Foundations",
     progress: 100,
     lessons: [
-      { id: "l1", title: "What is saving?", body: "Saving is setting aside money today for needs tomorrow. Even small amounts add up over time. Start with what you can — consistency matters more than size.", completed: true },
-      { id: "l2", title: "Setting a savings goal", body: "A clear goal — a new sewing machine, a school fee — turns saving into a plan. Write it down and pick a date.", completed: true },
+      { id: "l1", title: "What is saving?", body: "Saving is setting aside money today for needs tomorrow. Even small amounts add up over time. Start with what you can - consistency matters more than size.", completed: true },
+      { id: "l2", title: "Setting a savings goal", body: "A clear goal - a new sewing machine, a school fee - turns saving into a plan. Write it down and pick a date.", completed: true },
       { id: "l3", title: "Daily vs weekly saving", body: "Choose a rhythm that matches your income. Daily for traders, weekly for salaried, monthly for cooperative members.", completed: true },
     ],
   },
@@ -56,7 +56,7 @@ const MODULES: LiteracyModule[] = [
     category: "Credit",
     progress: 60,
     lessons: [
-      { id: "l1", title: "What is interest?", body: "Interest is the price you pay to borrow money — or earn when you save. It is usually stated as a percentage per year (APR).", completed: true },
+      { id: "l1", title: "What is interest?", body: "Interest is the price you pay to borrow money - or earn when you save. It is usually stated as a percentage per year (APR).", completed: true },
       { id: "l2", title: "Reading a loan offer", body: "Compare the total amount you repay, not just the monthly figure. A small monthly payment over a long period can cost more.", completed: true },
       { id: "l3", title: "Avoiding predatory rates", body: "If the cost of borrowing is more than what your business earns, the loan will trap you. Ask for the APR and compare two lenders.", completed: false },
     ],
@@ -70,7 +70,7 @@ const MODULES: LiteracyModule[] = [
     progress: 30,
     lessons: [
       { id: "l1", title: "Money in, money out", body: "Cash flow is the difference between what you receive and what you spend. Positive cash flow means your business can pay its bills.", completed: true },
-      { id: "l2", title: "A simple weekly ledger", body: "On Sunday evening, list sales and expenses for the week. The gap is your profit — or your warning sign.", completed: false },
+      { id: "l2", title: "A simple weekly ledger", body: "On Sunday evening, list sales and expenses for the week. The gap is your profit - or your warning sign.", completed: false },
       { id: "l3", title: "Saving for slow weeks", body: "Set aside a portion of strong weeks for slow ones. A cushion of two weeks of expenses is a good first goal.", completed: false },
     ],
   },
@@ -92,7 +92,7 @@ const QUIZZES: Quiz[] = [
   {
     id: "q1",
     moduleId: "m2",
-    title: "Understanding Interest — Check Your Knowledge",
+    title: "Understanding Interest - Check Your Knowledge",
     questions: [
       {
         id: "qq1",
@@ -106,14 +106,14 @@ const QUIZZES: Quiz[] = [
         prompt: "Which loan is more expensive overall?",
         options: ["$100 at 5% per month for 6 months", "$100 at 30% per year for 6 months"],
         correctIndex: 0,
-        explanation: "5% per month is roughly 60% per year — much higher than 30% per year.",
+        explanation: "5% per month is roughly 60% per year - much higher than 30% per year.",
       },
       {
         id: "qq3",
         prompt: "What does APR stand for?",
         options: ["Annual Payment Rate", "Annual Percentage Rate", "Average Profit Return", "Account Performance Ratio"],
         correctIndex: 1,
-        explanation: "APR — Annual Percentage Rate — is the yearly cost of borrowing as a percentage.",
+        explanation: "APR - Annual Percentage Rate - is the yearly cost of borrowing as a percentage.",
       },
     ],
   },

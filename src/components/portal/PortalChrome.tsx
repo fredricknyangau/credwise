@@ -1,6 +1,6 @@
-import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@/lib/store/auth";
-import { BookOpen, Home, LogOut, Square, User, Gauge } from "lucide-react";
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { BookOpen, Gauge, Home, LogOut, Square, User } from "lucide-react";
 
 const items = [
   { to: "/portal", label: "Home", icon: Home, exact: true },
@@ -15,7 +15,9 @@ export function PortalChrome() {
   const navigate = useNavigate();
 
   const isActive = (to: string, exact?: boolean) =>
-    exact ? path === to : path === to || (to !== "/portal" && path.startsWith(to.split("/").slice(0, 3).join("/")));
+    exact
+      ? path === to
+      : path === to || (to !== "/portal" && path.startsWith(to.split("/").slice(0, 3).join("/")));
 
   return (
     <>
@@ -26,7 +28,7 @@ export function PortalChrome() {
             <div className="grid size-8 place-items-center rounded-lg bg-brand-primary">
               <Square className="size-4 text-primary-foreground" strokeWidth={2.5} />
             </div>
-            <span className="font-display text-lg font-bold text-brand-primary">CrediPath</span>
+            <span className="font-display text-lg font-bold text-brand-primary">CredWise</span>
           </Link>
           <div className="flex items-center gap-3">
             <div className="text-right hidden sm:block">
@@ -37,7 +39,10 @@ export function PortalChrome() {
               {user?.name?.[0]?.toUpperCase() ?? "?"}
             </div>
             <button
-              onClick={() => { logout(); navigate({ to: "/" }); }}
+              onClick={() => {
+                logout();
+                navigate({ to: "/" });
+              }}
               className="grid size-9 place-items-center rounded-full text-muted-foreground hover:bg-secondary"
               aria-label="Sign out"
             >

@@ -1,11 +1,11 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
-import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import type { FinancialProfile } from "@/lib/types";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { ArrowLeft, ArrowRight, Check } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/portal/profile")({
-  head: () => ({ meta: [{ title: "Financial profile — CrediPath" }] }),
+  head: () => ({ meta: [{ title: "Financial profile - CredWise" }] }),
   component: ProfileForm,
 });
 
@@ -23,7 +23,14 @@ const steps = [
   {
     key: "businessType" as const,
     title: "What best describes your work?",
-    options: ["Market trader", "Tailoring / textiles", "Farming", "Food vendor", "Services", "Other"],
+    options: [
+      "Market trader",
+      "Tailoring / textiles",
+      "Farming",
+      "Food vendor",
+      "Services",
+      "Other",
+    ],
   },
   {
     key: "cooperative" as const,
@@ -44,7 +51,7 @@ function ProfileForm() {
       setTimeout(() => setStep((s) => s + 1), 200);
     } else {
       setTimeout(() => {
-        toast.success("Profile saved — +6 to your readiness score");
+        toast.success("Profile saved - +6 to your readiness score");
         navigate({ to: "/portal/readiness" });
       }, 250);
     }
@@ -60,14 +67,21 @@ function ProfileForm() {
       </button>
 
       <header className="mb-6">
-        <p className="text-xs font-bold uppercase tracking-widest text-brand-secondary">Financial profile</p>
+        <p className="text-xs font-bold uppercase tracking-widest text-brand-secondary">
+          Financial profile
+        </p>
         <h1 className="mt-1 font-display text-2xl font-bold">Help us understand you better</h1>
-        <p className="mt-1 text-sm text-muted-foreground">A few questions so we can tailor your readiness path.</p>
+        <p className="mt-1 text-sm text-muted-foreground">
+          A few questions so we can tailor your readiness path.
+        </p>
       </header>
 
       <div className="mb-6 flex items-center gap-2">
         {steps.map((_, i) => (
-          <div key={i} className={`h-1.5 flex-1 rounded-full transition-all ${i <= step ? "bg-brand-secondary" : "bg-secondary"}`} />
+          <div
+            key={i}
+            className={`h-1.5 flex-1 rounded-full transition-all ${i <= step ? "bg-brand-secondary" : "bg-secondary"}`}
+          />
         ))}
       </div>
 
@@ -90,7 +104,11 @@ function ProfileForm() {
                 }`}
               >
                 {opt}
-                {selected ? <Check className="size-5 text-brand-primary" /> : <ArrowRight className="size-4 text-muted-foreground" />}
+                {selected ? (
+                  <Check className="size-5 text-brand-primary" />
+                ) : (
+                  <ArrowRight className="size-4 text-muted-foreground" />
+                )}
               </button>
             );
           })}

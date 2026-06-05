@@ -10,12 +10,12 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-credwise}"]
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-credwise}" ]
       interval: 5s
       timeout: 5s
       retries: 10
     ports:
-      - "5432:5432"
+      - "5433:5432"
 
   # ── Alembic Migrations ───────────────────────────────────────────────────────
   migrate:
@@ -38,14 +38,14 @@ services:
     environment:
       DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-credwise}:${POSTGRES_PASSWORD:-credwise}@db:5432/${POSTGRES_DB:-credwise}
     ports:
-      - "8000:8000"
+      - "8080:8000"
     depends_on:
       migrate:
         condition: service_completed_successfully
     # Dev: hot reload. Comment out CMD override for production.
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     volumes:
-      - .:/app  # Mount source for hot reload — remove in production
+      - .:/app # Mount source for hot reload — remove in production
 
   # ── Seed (run once) ───────────────────────────────────────────────────────────
   seed:
@@ -60,7 +60,7 @@ services:
         condition: service_completed_successfully
     restart: "no"
     profiles:
-      - seed  # Only runs when: docker compose --profile seed up
+      - seed # Only runs when: docker compose --profile seed up
 
 volumes:
   postgres_data:

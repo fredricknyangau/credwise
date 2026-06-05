@@ -1,0 +1,23 @@
+# FastAPI + asyncpg
+fastapi==0.115.12
+uvicorn[standard]==0.34.2
+asyncpg==0.30.0
+pydantic==2.11.5
+pydantic-settings==2.9.1
+pydantic[email]==2.11.5
+
+# Auth
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+
+# Migrations
+alembic==1.15.2
+sqlalchemy[asyncio]==2.0.41  # Only for Alembic async engine — NO ORM used
+
+# HTTP (for future webhook/integrations)
+httpx==0.28.1
+
+# Testing
+pytest==8.3.5
+pytest-asyncio==0.25.3
+anyio==4.9.0

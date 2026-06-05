@@ -1,0 +1,66 @@
+services:
+  # ── PostgreSQL ───────────────────────────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    container_name: credwise_db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-credwise}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-credwise}
+      POSTGRES_DB: ${POSTGRES_DB:-credwise}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-credwise}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    ports:
+      - "5432:5432"
+
+  # ── Alembic Migrations ───────────────────────────────────────────────────────
+  migrate:
+    build: .
+    container_name: credwise_migrate
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-credwise}:${POSTGRES_PASSWORD:-credwise}@db:5432/${POSTGRES_DB:-credwise}
+    command: alembic upgrade head
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+
+  # ── FastAPI API ──────────────────────────────────────────────────────────────
+  api:
+    build: .
+    container_name: credwise_api
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-credwise}:${POSTGRES_PASSWORD:-credwise}@db:5432/${POSTGRES_DB:-credwise}
+    ports:
+      - "8000:8000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    # Dev: hot reload. Comment out CMD override for production.
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - .:/app  # Mount source for hot reload — remove in production
+
+  # ── Seed (run once) ───────────────────────────────────────────────────────────
+  seed:
+    build: .
+    container_name: credwise_seed
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-credwise}:${POSTGRES_PASSWORD:-credwise}@db:5432/${POSTGRES_DB:-credwise}
+    command: python scripts/seed.py
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    restart: "no"
+    profiles:
+      - seed  # Only runs when: docker compose --profile seed up
+
+volumes:
+  postgres_data:

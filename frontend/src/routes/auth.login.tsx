@@ -57,7 +57,7 @@ function Login() {
             role: p.role as UserRole,
             organization: p.institution_id || undefined,
           },
-          access_token
+          access_token,
         );
 
         toast.success(`Welcome back, ${p.full_name}`);
@@ -65,7 +65,7 @@ function Login() {
       } catch (err: any) {
         toast.error(
           err.response?.data?.message ||
-            "Authentication failed. Please verify your phone number and password."
+            "Authentication failed. Please verify your phone number and password.",
         );
       }
     }
@@ -99,9 +99,7 @@ function Login() {
           className="space-y-4 rounded-2xl border border-border bg-card p-6 shadow-soft"
         >
           <label className="block text-sm">
-            <span className="mb-1 block font-medium">
-              {USE_MOCKS ? "Email" : "Phone Number"}
-            </span>
+            <span className="mb-1 block font-medium">{USE_MOCKS ? "Email" : "Phone Number"}</span>
             <input
               type={USE_MOCKS ? "email" : "text"}
               value={email}
@@ -135,9 +133,7 @@ function Login() {
           >
             Sign in
           </button>
-          <p className="text-center text-xs text-muted-foreground">
-            Prototype - any email/password works.
-          </p>
+          <p className="text-center text-xs text-muted-foreground"></p>
         </form>
 
         {role === "mfi_admin" ? (
@@ -150,7 +146,10 @@ function Login() {
         ) : (
           <p className="text-center text-sm text-muted-foreground">
             New to CredWise?{" "}
-            <Link to="/auth/register-learner" className="font-semibold text-brand-primary hover:underline">
+            <Link
+              to="/auth/register-learner"
+              className="font-semibold text-brand-primary hover:underline"
+            >
               Sign up as a Learner
             </Link>
           </p>

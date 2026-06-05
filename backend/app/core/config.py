@@ -26,7 +26,7 @@ class Settings(BaseSettings):
     # Server
     host: str = "0.0.0.0"
     port: int = 8000
-    allowed_origins: list[str] = Field(
+    allowed_origins: str | list[str] = Field(
         default=["http://localhost:5173", "http://localhost:3000"]
     )
 
@@ -52,6 +52,8 @@ class Settings(BaseSettings):
     @field_validator("allowed_origins", mode="before")
     @classmethod
     def assemble_cors_origins(cls, v: str | list[str]) -> list[str]:
+        if not v:
+            return ["*"]
         if isinstance(v, str) and not v.startswith("["):
             return [i.strip() for i in v.split(",") if i.strip()]
         if isinstance(v, list):

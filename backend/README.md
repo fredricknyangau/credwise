@@ -86,3 +86,31 @@ Run the test suite using a dedicated test database:
 PYTHONPATH=. pytest tests/
 ```
 The test suite utilizes PostgreSQL transaction rollbacks per test to ensure full test isolation and database consistency.
+
+---
+
+## 🔍 Troubleshooting Port Conflicts & Stale Volumes
+
+### 1. Port 5432 or 8000 is Already in Use
+If Docker Compose fails because port `5432` or `8000` is already in use, you can free them up on your host machine:
+
+- **Free up PostgreSQL Port 5432:**
+  ```bash
+  sudo systemctl stop postgresql
+  # Or find and kill the process:
+  sudo fuser -k 5432/tcp
+  ```
+
+- **Free up Web Server Port 8000:**
+  ```bash
+  # Find and kill any process running on port 8000:
+  sudo fuser -k 8000/tcp
+  ```
+
+### 2. Password Authentication Failed for User "credwise"
+If the migration container exits with `InvalidPasswordError`, it is caused by a leftover PostgreSQL volume from a previous deployment or another database.
+Reset the volumes using:
+```bash
+docker compose down -v
+docker compose up -d
+```
